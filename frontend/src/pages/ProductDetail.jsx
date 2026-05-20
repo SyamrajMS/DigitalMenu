@@ -12,6 +12,7 @@ import {
   MessageSquare,
   Globe
 } from 'lucide-react';
+import { API_HOST } from '../config';
 
 const ProductDetail = () => {
   const { tenantId, tableId, itemId } = useParams();
@@ -27,7 +28,7 @@ const ProductDetail = () => {
   const [mediaList, setMediaList] = useState([]);
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
 
-  const apiHost = `http://${window.location.hostname}:4000`;
+  const apiHost = API_HOST;
 
   // Join Room for Multi-tenant sockets to receive real-time menu modifications
   useEffect(() => {

@@ -13,6 +13,7 @@ import {
   Phone,
   Clock
 } from 'lucide-react';
+import { API_HOST } from '../config';
 
 const CustomerMenu = () => {
   const { tenantId, tableId } = useParams();
@@ -31,7 +32,7 @@ const CustomerMenu = () => {
   const [orderSuccess, setOrderSuccess] = useState(false);
 
   const categoriesRef = useRef(null);
-  const apiHost = `http://${window.location.hostname}:4000`;
+  const apiHost = API_HOST;
 
   // Sync state with localstorage on load
   useEffect(() => {

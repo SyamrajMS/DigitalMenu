@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
-
-const SOCKET_URL = `http://${window.location.hostname}:4000`;
+import { SOCKET_URL } from '../config';
 
 const SocketContext = createContext({
   socket: null,

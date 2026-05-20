@@ -14,6 +14,7 @@ import {
   Lock,
   LogIn
 } from 'lucide-react';
+import { API_HOST } from '../config';
 
 const SuperAdminDashboard = () => {
   const [tenants, setTenants] = useState([]);
@@ -39,7 +40,7 @@ const SuperAdminDashboard = () => {
     text: '#78350f'
   });
 
-  const apiHost = `http://${window.location.hostname}:4000`;
+  const apiHost = API_HOST;
 
   // Fetch all tenants
   const fetchTenants = async () => {

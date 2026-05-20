@@ -22,6 +22,7 @@ import {
   Link as LinkIcon,
   Trash2
 } from 'lucide-react';
+import { API_HOST } from '../config';
 
 const AdminDashboard = () => {
   const { tenantId } = useParams();
@@ -70,7 +71,7 @@ const AdminDashboard = () => {
     text: ''
   });
 
-  const apiHost = `http://${window.location.hostname}:4000`;
+  const apiHost = API_HOST;
 
   // WebSockets Real-time connection
   useEffect(() => {
