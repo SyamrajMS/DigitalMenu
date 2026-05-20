@@ -25,7 +25,8 @@ services:
     publishDir: dist
     envVars:
       - key: VITE_API_HOST
-        fromService:
-          type: web
-          name: digital-menu-backend
-          property: host
+        value: https://digitalmenu-5rw1.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
