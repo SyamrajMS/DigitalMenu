@@ -1,0 +1,109 @@
+========================================================================
+             QR MENU PLATFORM DEVELOPER DOCUMENTATION
+========================================================================
+
+This text file outlines the routing structures, backend setup, socket protocols,
+and instructions on onboarding new tenant restaurant branding setups.
+
+------------------------------------------------------------------------
+1. System Routing Guide
+------------------------------------------------------------------------
+
+Frontend URL Patterns:
+- http://localhost:5173/menu/:tenantId/:tableId
+  The customer-facing digital menu catalog matching a specific restaurant and table.
+  Example: http://localhost:5173/menu/resto-1/table-5
+
+- http://localhost:5173/menu/:tenantId/:tableId/item/:itemId
+  The dedicated mobile-first product details view (description, image/video gallery, 
+  and custom file upload simulator).
+  Example: http://localhost:5173/menu/resto-1/table-5/item/gg-2
+
+- http://localhost:5173/admin/:tenantId
+  The live kitchen orders feed and stock management console for restaurant managers.
+  Example: http://localhost:5173/admin/resto-1
+
+Backend API Endpoints:
+- GET /api/tenants/:tenantId
+  Retrieves restaurant branding metadata (Name, Logo URL, custom HSL styling colors).
+
+- GET /api/tenants/:tenantId/menu
+  Retrieves all catalog items for the specified tenant.
+
+- GET /api/tenants/:tenantId/orders
+  Retrieves active orders list for the tenant.
+
+- POST /api/tenants/:tenantId/orders
+  Places a new order matching a table session. Emits real-time notification to the kitchen.
+
+- PUT /api/tenants/:tenantId/orders/:orderId
+  Updates order state cycle ('Pending' -> 'Preparing' -> 'Served').
+
+- PUT /api/tenants/:tenantId/menu/:itemId
+  Toggles inventory availability status ('available': true/false) which feeds live to customer menus.
+
+------------------------------------------------------------------------
+2. Kitchen Admin Dashboard Setups
+------------------------------------------------------------------------
+
+The Admin Panel (/admin/:tenantId) provides:
+- Live Kitchen Orders Panel: Card deck visualizing incoming items, table numbers, 
+  timestamps, and customized chef instructions.
+  - Active buttons transition statuses: "Start Preparing" (moves Pending to Preparing) 
+    and "Mark as Served" (completes prep cycle).
+- Product Catalog View: Lists every catalog dish, and hosts a live toggle switch. 
+  When turned OFF, the dish instantly displays a "Sold Out" banner on all customer 
+  menus without reloading pages.
+- Item Modify Form: Click "Modify" next to any dish to edit its name, description, 
+  price, category, or default image.
+
+------------------------------------------------------------------------
+3. How to Create and Onboard New Tenants
+------------------------------------------------------------------------
+
+The server utilizes an in-memory SaaS architecture. To add new restaurants:
+1. Open backend/server.js
+2. Locate the "tenants" database object.
+3. Append a new key representing your new tenant slug (e.g. 'resto-3').
+4. Define its branding configuration following this exact schema:
+
+  'your-custom-slug': {
+    id: 'your-custom-slug',
+    name: 'Your Restaurant Name',
+    logo: 'https://link-to-your-logo.png',
+    theme: {
+      primary: '#HEX_COLOR',       // Main brand theme color
+      primaryHover: '#HEX_COLOR',  // Hover brand theme color
+      background: '#HEX_COLOR',    // Canvas background color (e.g., pale color)
+      accent: '#HEX_COLOR',        // Tag/badge backgrounds
+      text: '#HEX_COLOR'           // Primary high-contrast text color
+    },
+    menu: [
+      {
+        id: 'unique-item-id-1',
+        name: 'Dish Title',
+        description: 'Dish ingredients and details.',
+        price: 19.99,
+        category: 'Starters', // Grouping category
+        image: 'https://link-to-food-image.png',
+        isVeg: true,          // Green indicator (true) or Red indicator (false)
+        available: true       // Live default inventory stock
+      }
+    ],
+    orders: [] // Keep empty array to store incoming table submissions
+  }
+
+5. Restart the backend process. Your new menu will instantly load with custom routing 
+   branding at http://localhost:5173/menu/your-custom-slug/table-1.
+
+------------------------------------------------------------------------
+4. Real-time Synchronization (WebSockets)
+------------------------------------------------------------------------
+
+All connection states synchronize on Socket.io. Clients join dynamic rooms:
+- Emit 'join-tenant' event upon load containing the tenantId string.
+- Backend emits 'new-order' to kitchen when a table finishes their checkout.
+- Backend emits 'menu-updated' to customers when an administrator toggles 
+  availability or modifies description values.
+- Backend emits 'order-updated' when order states cycle.
+========================================================================

@@ -1,0 +1,31 @@
+services:
+  # ─── 1. Backend Web Service ─────────────────────────────────────────────────
+  - type: web
+    name: digital-menu-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: SUPER_ADMIN_USERNAME
+        sync: false # Prompt user to fill this securely in the Render UI
+      - key: SUPER_ADMIN_PASSWORD
+        sync: false # Prompt user to fill this securely in the Render UI
+
+  # ─── 2. Frontend Static Site ────────────────────────────────────────────────
+  - type: web
+    name: digital-menu-client
+    env: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm run build
+    publishDir: dist
+    envVars:
+      - key: VITE_API_HOST
+        fromService:
+          type: web
+          name: digital-menu-backend
+          property: host
